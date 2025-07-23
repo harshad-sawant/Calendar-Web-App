@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="clender.css">
+    <title>Calendar App</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Calendar App</h1>
+
+        <div>
+            <button onclick="showCurrentMonth()">Show Current Month Calendar</button>
+            <div id="current-month"></div>
+        </div>
+
+        <h2>Check Date Validity</h2>
+        <input type="number" id="year" placeholder="Year" min="1">
+        <input type="number" id="month" placeholder="Month (1-12)" min="1" max="12">
+        <input type="number" id="date" placeholder="Date" min="1">
+        <button onclick="checkDate()">Check Date</button>
+        <div id="date-result"></div>
+
+        <h2>Count Days Between Dates</h2>
+        <input type="text" id="date1" placeholder="From (dd-mm-yyyy)">
+        <input type="text" id="date2" placeholder="To (dd-mm-yyyy)">
+        <button onclick="countDays()">Count Days</button>
+        <div id="days-result"></div>
+    </div>
+
+    <script>
+        function showCurrentMonth() {
+            const now = new Date();
+            const month = now.getMonth() + 1; // Months are 0-indexed
+            const year = now.getFullYear();
+            const monthCalendar = generateCalendar(year, month);
+            document.getElementById('current-month').innerHTML = monthCalendar;
+        }
+
+        function generateCalendar(year, month) {
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const firstDay = new Date(year, month - 1, 1).getDay();
+            let calendar = '<table><tr>';
+
+            // Header
+            calendar += '<th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr><tr>';
+
+            // Empty cells for the days before the first day of the month
+            for (let i = 0; i < firstDay; i++) {
+                calendar += '<td></td>';
+            }
+
+            // Days of the month
+            for (let day = 1; day <= daysInMonth; day++) {
+                calendar += `<td>${day}</td>`;
+                if ((day + firstDay) % 7 === 0) {
+                    calendar += '</tr><tr>';
+                }
+            }
+
+            calendar += '</tr></table>';
+            return calendar;
+        }
+
+        function checkDate() {
+            const year = parseInt(document.getElementById('year').value);
+            const month = parseInt(document.getElementById('month').value);
+            const date = parseInt(document.getElementById('date').value);
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const isValid = date > 0 && date <= daysInMonth;
+
+            const resultMessage = isValid ? 
+                `The date ${date}/${month}/${year} is valid.` : 
+                `The date ${date}/${month}/${year} is not valid.`;
+            document.getElementById('date-result').innerText = resultMessage;
+        }
+
+        function countDays() {
+            const date1Str = document.getElementById('date1').value;
+            const date2Str = document.getElementById('date2').value;
+
+            const date1 = new Date(date1Str.split('-').reverse().join('-'));
+            const date2 = new Date(date2Str.split('-').reverse().join('-'));
+
+            const delta = Math.abs(date2 - date1);
+            const days = Math.ceil(delta / (1000 * 60 * 60 * 24));
+            document.getElementById('days-result').innerText = `Days: ${days}`;
+        }
+    </script>
+</body>
+</html>
